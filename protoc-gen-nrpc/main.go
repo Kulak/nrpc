@@ -12,10 +12,10 @@ import (
 
 	"github.com/nats-rpc/nrpc"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/golang/protobuf/protoc-gen-go/generator"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"google.golang.org/protobuf/proto"
 )
 
 // baseName returns the last path element of the name, with the last dotted suffix removed.
@@ -218,13 +218,15 @@ func getOneofDecl(d *descriptor.DescriptorProto, name string) *descriptor.OneofD
 }
 
 func pkgSubject(fd *descriptor.FileDescriptorProto) string {
+	fmt.Println("pkgSubject begin")
 	if options := fd.GetOptions(); options != nil {
-		e, err := proto.GetExtension(options, nrpc.E_PackageSubject)
-		if err == nil {
-			value := e.(*string)
-			return *value
-		}
+		e := proto.GetExtension(options, nrpc.E_PackageSubject)
+		fmt.Println("e:", e)
+		value := e.(*string)
+		fmt.Println("pkgSubject end 1")
+		return *value
 	}
+	fmt.Println("pkgSubject end 2")
 	return fd.GetPackage()
 }
 
@@ -302,31 +304,25 @@ var funcMap = template.FuncMap{
 	"GetPkgSubject": pkgSubject,
 	"GetPkgSubjectParams": func(fd *descriptor.FileDescriptorProto) []string {
 		if opts := fd.GetOptions(); opts != nil {
-			e, err := proto.GetExtension(opts, nrpc.E_PackageSubjectParams)
-			if err == nil {
-				value := e.([]string)
-				return value
-			}
+			e := proto.GetExtension(opts, nrpc.E_PackageSubjectParams)
+			value := e.([]string)
+			return value
 		}
 		return nil
 	},
 	"GetServiceSubject": func(sd *descriptor.ServiceDescriptorProto) string {
 		if opts := sd.GetOptions(); opts != nil {
-			s, err := proto.GetExtension(opts, nrpc.E_ServiceSubject)
-			if err == nil {
-				value := s.(*string)
-				return *value
-			}
+			s := proto.GetExtension(opts, nrpc.E_ServiceSubject)
+			value := s.(*string)
+			return *value
 		}
 		if opts := currentFile.GetOptions(); opts != nil {
-			s, err := proto.GetExtension(opts, nrpc.E_ServiceSubjectRule)
-			if err == nil {
-				switch *(s.(*nrpc.SubjectRule)) {
-				case nrpc.SubjectRule_COPY:
-					return sd.GetName()
-				case nrpc.SubjectRule_TOLOWER:
-					return strings.ToLower(sd.GetName())
-				}
+			s := proto.GetExtension(opts, nrpc.E_ServiceSubjectRule)
+			switch *(s.(*nrpc.SubjectRule)) {
+			case nrpc.SubjectRule_COPY:
+				return sd.GetName()
+			case nrpc.SubjectRule_TOLOWER:
+				return strings.ToLower(sd.GetName())
 			}
 		}
 		return sd.GetName()
@@ -341,46 +337,39 @@ var funcMap = template.FuncMap{
 	},
 	"GetMethodSubject": func(md *descriptor.MethodDescriptorProto) string {
 		if opts := md.GetOptions(); opts != nil {
-			s, err := proto.GetExtension(opts, nrpc.E_MethodSubject)
-			if err == nil {
-				value := s.(*string)
-				return *value
-			}
+			s := proto.GetExtension(opts, nrpc.E_MethodSubject)
+			value := s.(*string)
+			return *value
 		}
 		if opts := currentFile.GetOptions(); opts != nil {
-			s, err := proto.GetExtension(opts, nrpc.E_MethodSubjectRule)
-			if err == nil {
-				switch *(s.(*nrpc.SubjectRule)) {
-				case nrpc.SubjectRule_COPY:
-					return md.GetName()
-				case nrpc.SubjectRule_TOLOWER:
-					return strings.ToLower(md.GetName())
-				}
+			s := proto.GetExtension(opts, nrpc.E_MethodSubjectRule)
+			switch *(s.(*nrpc.SubjectRule)) {
+			case nrpc.SubjectRule_COPY:
+				return md.GetName()
+			case nrpc.SubjectRule_TOLOWER:
+				return strings.ToLower(md.GetName())
 			}
 		}
 		return md.GetName()
 	},
 	"GetMethodSubjectParams": func(md *descriptor.MethodDescriptorProto) []string {
 		if opts := md.GetOptions(); opts != nil {
-			if e, err := proto.GetExtension(opts, nrpc.E_MethodSubjectParams); err == nil {
-				return e.([]string)
-			}
+			e := proto.GetExtension(opts, nrpc.E_MethodSubjectParams)
+			return e.([]string)
 		}
 		return []string{}
 	},
 	"GetServiceSubjectParams": func(sd *descriptor.ServiceDescriptorProto) []string {
 		if opts := sd.GetOptions(); opts != nil {
-			if e, err := proto.GetExtension(opts, nrpc.E_ServiceSubjectParams); err == nil {
-				return e.([]string)
-			}
+			e := proto.GetExtension(opts, nrpc.E_ServiceSubjectParams)
+			return e.([]string)
 		}
 		return []string{}
 	},
 	"HasStreamedReply": func(md *descriptor.MethodDescriptorProto) bool {
 		if opts := md.GetOptions(); opts != nil {
-			if e, err := proto.GetExtension(opts, nrpc.E_StreamedReply); err == nil {
-				return *(e.(*bool))
-			}
+			e := proto.GetExtension(opts, nrpc.E_StreamedReply)
+			return *(e.(*bool))
 		}
 		return false
 	},

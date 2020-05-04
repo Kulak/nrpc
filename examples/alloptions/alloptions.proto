@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package main;
+option go_package = "github.com/nats-rpc/nrpc/examples/alloptions";
 
 import "github.com/nats-rpc/nrpc/nrpc.proto";
 

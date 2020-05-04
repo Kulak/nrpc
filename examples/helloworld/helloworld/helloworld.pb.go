@@ -5,9 +5,10 @@ package helloworld
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	_ "github.com/nats-rpc/nrpc"
 	math "math"
+
+	_ "github.com/nats-rpc/nrpc"
+	proto "google.golang.org/protobuf/proto"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

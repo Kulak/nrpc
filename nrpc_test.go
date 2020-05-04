@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/nats-io/nats.go"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/nats-rpc/nrpc"
 )
